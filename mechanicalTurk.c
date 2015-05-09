@@ -4,8 +4,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
-int main(int argc, const char* argv[]) {
-    // Enter code here...
-    return EXIT_SUCCESS;
+#include "Game.h"
+#include "mechanicalTurk.h"
+
+action decideAction (Game g) {
+    
+    
+    action nextAction;
+    nextAction.actionCode = PASS;
+    
+    return nextAction;
 }
