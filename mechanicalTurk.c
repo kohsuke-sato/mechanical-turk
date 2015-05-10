@@ -10,10 +10,15 @@
 #include "mechanicalTurk.h"
 
 action decideAction (Game g) {
-    
-    
     action nextAction;
-    nextAction.actionCode = PASS;
+    
+    if ((g->playerArray[getWhoseTurn(g) - 1].students[STUDENT_MJ] > 1) &&
+        (g->playerArray[getWhoseTurn(g) - 1].students[STUDENT_MTV] > 1) &&
+        (g->playerArray[getWhoseTurn(g) - 1].students[STUDENT_MMONEY] > 1)) {
+        nextAction.actionCode = START_SPINOFF;
+    } else {
+        nextAction.actionCode = PASS;
+    }
     
     return nextAction;
 }
