@@ -11,13 +11,20 @@
 
 action decideAction (Game g) {
     action nextAction;
+    action testAction;
     
-    if ((g->playerArray[getWhoseTurn(g) - 1].students[STUDENT_MJ] > 1) &&
-        (g->playerArray[getWhoseTurn(g) - 1].students[STUDENT_MTV] > 1) &&
-        (g->playerArray[getWhoseTurn(g) - 1].students[STUDENT_MMONEY] > 1)) {
+    // Mr Pass
+    testAction.actionCode = START_SPINOFF;
+    if (isLegalAction(g, testAction)) {
         nextAction.actionCode = START_SPINOFF;
     } else {
         nextAction.actionCode = PASS;
+    }
+    
+    // Mr Campus
+    testAction.actionCode = BUILD_CAMPUS;
+    if (isLegalAction(g, testAction)) {
+        nextAction.actionCode = BUILD_CAMPUS;
     }
     
     return nextAction;
