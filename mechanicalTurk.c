@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "Game.h"
 #include "mechanicalTurk.h"
@@ -42,10 +43,12 @@ action decideAction (Game g) {
         while ((i < sizeof(paths) / sizeof(paths[0])) && !chosen)
         {
             testAction.actionCode = BUILD_CAMPUS;
-            testAction.destination = paths[i];
+            memcpy(testAction.destination, paths[i],
+                   sizeof(paths[i]));
             if (isLegalAction(g, testAction)) {
                 nextAction.actionCode = BUILD_CAMPUS;
-                nextAction.destination = paths[i];
+                memcpy(nextAction.destination, paths[i],
+                       sizeof(paths[i]));
                 chosen = TRUE;
             }
             i++;
@@ -59,10 +62,12 @@ action decideAction (Game g) {
         while ((i < sizeof(arcs) / sizeof(arcs[0])) && !chosen)
         {
             testAction.actionCode = OBTAIN_ARC;
-            testAction.destination = arcs[i];
+            memcpy(testAction.destination, arcs[i],
+                   sizeof(arcs[i]));
             if (isLegalAction(g, testAction)) {
                 nextAction.actionCode = OBTAIN_ARC;
-                nextAction.destination = arcs[i];
+                memcpy(nextAction.destination, arcs[i],
+                       sizeof(arcs[i]));
                 chosen = TRUE;
             }
             i++;
@@ -75,10 +80,12 @@ action decideAction (Game g) {
         int i = 0;
         while ((i < sizeof(paths) / sizeof(paths[0])) & !chosen) {
             testAction.actionCode = BUILD_GO8;
-            testAction.destination = paths[i];
+            memcpy(testAction.destination, paths[i],
+                   sizeof(paths[i]));
             if (isLegalAction(g, testAction)) {
                 nextAction.actionCode = BUILD_GO8;
-                nextAction.destination = paths[i];
+                memcpy(nextAction.destination, paths[i],
+                       sizeof(paths[i]));
                 chosen = TRUE;
             }
             i++;
