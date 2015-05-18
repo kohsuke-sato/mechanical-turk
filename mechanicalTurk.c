@@ -42,10 +42,10 @@ action decideAction (Game g) {
         while ((i < sizeof(paths) / sizeof(paths[0])) && !chosen)
         {
             testAction.actionCode = BUILD_CAMPUS;
-            testAction.destination = arcs[i];
+            testAction.destination = paths[i];
             if (isLegalAction(g, testAction)) {
                 nextAction.actionCode = BUILD_CAMPUS;
-                nextAction.destination = arcs[i];
+                nextAction.destination = paths[i];
                 chosen = TRUE;
             }
             i++;
@@ -58,11 +58,11 @@ action decideAction (Game g) {
         int i = 0;
         while ((i < sizeof(arcs) / sizeof(arcs[0])) && !chosen)
         {
-            testAction.actionCode = BUILD_ARC;
-            testAction.destination = paths[i];
+            testAction.actionCode = OBTAIN_ARC;
+            testAction.destination = arcs[i];
             if (isLegalAction(g, testAction)) {
-                nextAction.actionCode = BUILD_ARC;
-                nextAction.destination = paths[i];
+                nextAction.actionCode = OBTAIN_ARC;
+                nextAction.destination = arcs[i];
                 chosen = TRUE;
             }
             i++;
