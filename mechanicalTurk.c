@@ -21,20 +21,87 @@
 "LRLRLRRLRL", "LRLRLRRLRLR"}
 
 action decideAction (Game g) {
-    action nextAction;
     action testAction;
+    action nextAction;
     
     char chosen = FALSE;
-    
-    // Mr Pass - commented out for now
-    /*
-    testAction.actionCode = START_SPINOFF;
-    if (isLegalAction(g, testAction)) {
-        nextAction.actionCode = START_SPINOFF;
-    } else {
-        nextAction.actionCode = PASS;
+
+    // Try to change disciplines
+    if (!chosen) {
+        testAction.actionCode = RETRAIN_STUDENTS;
+        testAction.disciplineFrom = STUDENT_BQN;
+        testAction.disciplineTo = STUDENT_MJ;
+        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MJ) < STUDENT_BQN * 2) {
+            nextAction = testAction;
+            chosen = TRUE;
+        }
     }
-    */
+
+    if (!chosen) {
+        testAction.actionCode = RETRAIN_STUDENTS;
+        testAction.disciplineFrom = STUDENT_BPS;
+        testAction.disciplineTo = STUDENT_MJ;
+        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MJ) < STUDENT_BPS * 2) {
+            nextAction = testAction;
+            chosen = TRUE;
+        }
+    }
+
+    if (!chosen) {
+        testAction.actionCode = RETRAIN_STUDENTS;
+        testAction.disciplineFrom = STUDENT_BQN;
+        testAction.disciplineTo = STUDENT_MTV;
+        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MTV) < STUDENT_BQN * 2) {
+            nextAction = testAction;
+            chosen = TRUE;
+        }
+    }
+
+    if (!chosen) {
+        testAction.actionCode = RETRAIN_STUDENTS;
+        testAction.disciplineFrom = STUDENT_BPS;
+        testAction.disciplineTo = STUDENT_MTV;
+        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MTV) < STUDENT_BPS * 2) {
+            nextAction = testAction;
+            chosen = TRUE;
+        }
+    }
+
+    if (!chosen) {
+        testAction.actionCode = RETRAIN_STUDENTS;
+        testAction.disciplineFrom = STUDENT_BQN;
+        testAction.disciplineTo = STUDENT_MMONEY;
+        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MMONEY) < STUDENT_BQN * 2) {
+            nextAction = testAction;
+            chosen = TRUE;
+        }
+    }
+
+    if (!chosen) {
+        testAction.actionCode = RETRAIN_STUDENTS;
+        testAction.disciplineFrom = STUDENT_BPS;
+        testAction.disciplineTo = STUDENT_MMONEY;
+        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MMONEY) < STUDENT_BPS * 2) {
+            nextAction = testAction;
+            chosen = TRUE;
+        }
+    }
+
+    // Mr GO8
+    if (!chosen) {
+        path paths[] = ALL_PATHS;
+        int i = 0;
+        while ((i < sizeof(paths) / sizeof(paths[0])) & !chosen) {
+            testAction.actionCode = BUILD_GO8;
+            memcpy(testAction.destination, paths[i],
+                   sizeof(paths[i]));
+            if (isLegalAction(g, testAction)) {
+                nextAction = testAction;
+                chosen = TRUE;
+            }
+            i++;
+        }
+    }
 
     // Mr Campus
     if (!chosen) {
@@ -46,9 +113,7 @@ action decideAction (Game g) {
             memcpy(testAction.destination, paths[i],
                    sizeof(paths[i]));
             if (isLegalAction(g, testAction)) {
-                nextAction.actionCode = BUILD_CAMPUS;
-                memcpy(nextAction.destination, paths[i],
-                       sizeof(paths[i]));
+                nextAction = testAction;
                 chosen = TRUE;
             }
             i++;
@@ -65,32 +130,26 @@ action decideAction (Game g) {
             memcpy(testAction.destination, arcs[i],
                    sizeof(arcs[i]));
             if (isLegalAction(g, testAction)) {
-                nextAction.actionCode = OBTAIN_ARC;
-                memcpy(nextAction.destination, arcs[i],
-                       sizeof(arcs[i]));
+                nextAction = testAction;
                 chosen = TRUE;
             }
             i++;
         }
     }
-    
-    // Mr GO8
+
+    // Mr Pass
+
     if (!chosen) {
-        path paths[] = ALL_PATHS;
-        int i = 0;
-        while ((i < sizeof(paths) / sizeof(paths[0])) & !chosen) {
-            testAction.actionCode = BUILD_GO8;
-            memcpy(testAction.destination, paths[i],
-                   sizeof(paths[i]));
-            if (isLegalAction(g, testAction)) {
-                nextAction.actionCode = BUILD_GO8;
-                memcpy(nextAction.destination, paths[i],
-                       sizeof(paths[i]));
-                chosen = TRUE;
-            }
-            i++;
-        }
+        testAction.actionCode = START_SPINOFF;
+        if (isLegalAction(g, testAction)) {
+            nextAction = testAction;
+            chosen = TRUE;
+        } 
     }
-    
+
+    if (!chosen) {
+        nextAction.actionCode = PASS;
+    }
+     
     return nextAction;
 }
