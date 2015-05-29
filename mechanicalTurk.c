@@ -80,7 +80,7 @@ action decideAction (Game g) {
     }
 
     // Mr ARC
-    if (!chosen) {
+    if (!chosen && getARCs(g, getWhoseTurn(g)) < getCampuses(g, getWhoseTurn(g)) + 10) {
         path arcs[] = ALL_PATHS;
         int i = 0;
         while ((i < NUM_PATHS) && !chosen) {
