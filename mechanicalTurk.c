@@ -13,13 +13,12 @@
 #define ALL_PATHS {"RL", "RLR", "RLL", "RLRL", "RLRR", "RLLR",\
  "RLRRL", "RLRLR", "RLRLL", "RLLRL", "RLRRLL", "RLRLRL",\
  "RLRLLR", "RLLRLR", "RLLRLRR", "RLRLRLL", "RLRLRLR", "RLRRLLR",\
- "RLLRLRRL", "RLRLRLLR", "RLRLRLRL", "RLRLRLRR","RLRLRLLRR",\
- "RLLRLRRLR", "", "R", "L", "RR", "LR", "RRL",\
- "LRL", "RRLR", "LRLR", "LRLRL", "RRLRL", "LRLRLR",\
- "RRLRLL", "LRLRLRR", "RRLRLLR", "LRLRLRR", "RRLRLLRL", "LRLRLRRL",\
- "RRLRLLRLR", "LRLRLRRLR", "LRLRLRRLRR", "RRLRLLRLRL", "LRLRRLRLRL",\
- "RRLLRLRLR","LRLRRLRLRLR", "RRLLRLRLRL", "LRRLRLRLRL", "RLRLRLRLR",\
- "RLRLRLRLRL", "LRRLRLRLRLR"}
+ "RLLRLRRL", "RLRLRLLR", "RLRLRLRL", "RLRLRLRR","RLRLRLLRR", "RLLRLRRLR",\
+ "R", "LR", "RRL", "RRLRLL", "LRLR", "LRLRLRR",\
+ "LRLRLRR", "RRLRLLRL", "LRLRLRRLR", "LRLRRLRLRL", "RRLLRLRLR", "LRRLRLRLRL",\
+ "RLRLRLRLR", "", "L", "LRL", "LRLRL", "LRLRLR",\
+ "LRLRLRRL", "LRLRLRRLRL", "LRLRRLRLRLR", "LRRLRLRLRLR", "RLRLRLRLRL", "RRLLRLRLRL",\
+ "RRLRLLRLRL", "RRLRLLRLR", "RRLRLLR", "RRLRL", "RRLR", "RR"}
  #define NUM_PATHS 54
 
 action decideAction (Game g) {
@@ -46,20 +45,23 @@ action decideAction (Game g) {
             }
             i++;
         }
-        
-        if (getStudents(g, getWhoseTurn(g), STUDENT_BQN) == 0) {
-            leastStudents = STUDENT_BQN;
-        } else if (getStudents(g, getWhoseTurn(g), STUDENT_BPS) == 0) {
-            leastStudents = STUDENT_BPS;
-        }
         testAction.actionCode = RETRAIN_STUDENTS;
         testAction.disciplineFrom = mostStudents;
         testAction.disciplineTo = leastStudents;
-        if ((getStudents(g, getWhoseTurn(g), mostStudents) > 3) &&
-            isLegalAction(g, testAction)) {
+        if ((getStudents(g, getWhoseTurn(g), mostStudents) > getExchangeRate(g, getWhoseTurn(g), mostStudents, leastStudents)) &&
+            isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), leastStudents) == 0) {
             nextAction = testAction;
             chosen = TRUE;
         }
+    }
+
+    // Mr Spinoff
+    if (!chosen) {
+        testAction.actionCode = START_SPINOFF;
+        if (isLegalAction(g, testAction)) {
+            nextAction = testAction;
+            chosen = TRUE;
+        } 
     }
 
     // Mr Campus
@@ -108,15 +110,6 @@ action decideAction (Game g) {
                 i++;
             }
         }
-    }
-
-    // Mr Spinoff
-    if (!chosen) {
-        testAction.actionCode = START_SPINOFF;
-        if (isLegalAction(g, testAction)) {
-            nextAction = testAction;
-            chosen = TRUE;
-        } 
     }
 
     // Mr Pass
