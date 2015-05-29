@@ -10,7 +10,7 @@
 #include "Game.h"
 #include "mechanicalTurk.h"
 
-#define ALL_PATHS {"RRLR", "RRLRL", "RRLRLL", "RRLRLLR", "RRLRLLRL",\
+/*#define ALL_PATHS {"RRLR", "RRLRL", "RRLRLL", "RRLRLLR", "RRLRLLRL",\
 "RRLRLLRLR", "RRLRLLRLRL", "RR", "RRL", "RRLL", "RRLLR", "RRLLRL", \
 "RRLLRLR", "RRLLRLRL", "RRLLRLRLR", "RRLLRLRLRL", "", "R", "RL", "RLR",\
 "RLRL", "RLRLR", "RLRLRL", "RLRLRLR", "RLRLRLRL", "RLRLRLRLR", \
@@ -18,16 +18,28 @@
 "LRRLRLRL", "LRRLRLRLR", "LRRLRLRLRL", "LRRLRLRLRLR", "LRL", "LRLR", \
 "LRLRR", "LRLRRL", "LRLRRLR", "LRLRRLRL","LRLRRLRLR", "LRLRRLRLRL", \
 "LRLRRLRLRLR", "LRLRL", "LRLRLR", "LRLRLRR","LRLRLRRL", "LRLRLRRLR", \
-"LRLRLRRLRL", "LRLRLRRLRLR"}
+"LRLRLRRLRL", "LRLRLRRLRLR"}*/
+
+#define ALL_PATHS {"RL", "RLR", "RLL", "RLRL", "RLRR", "RLLR",\
+ "RLRRL", "RLRLR", "RLRLL", "RLLRL", "RLRRLL", "RLRLRL",\
+ "RLRLLR", "RLLRLR", "RLLRLRR", "RLRLRLL", "RLRLRLR", "RLRRLLR",\
+ "RLLRLRRL", "RLRLRLLR", "RLRLRLRL", "RLRLRLRR","RLRLRLLRR", "RLLRLRRLR",\
+ "", "R", "L", "RR", "LR", "RRL",\
+ "LRL", "RRLR", "LRLR", "LRLRL", "RRLRL", "LRLRLR",\
+ "RRLRLL", "LRLRLRR", "RRLRLLR", "LRLRLRR", "RRLRLLRL", "LRLRLRRL",\
+ "RRLRLLRLR", "LRLRLRRLR", "LRLRLRRLRR", "RRLRLLRLRL", "LRLRRLRLRL", "RRLLRLRLR",\
+ "LRLRRLRLRLR", "RRLLRLRLRL", "LRRLRLRLRL", "RLRLRLRLR", "RLRLRLRLRL", "LRRLRLRLRLR"}
 
 action decideAction (Game g) {
     action testAction;
     action nextAction;
     
     char chosen = FALSE;
+    int mostStudents;
+    int leastStudents;
 
     // Try to change disciplines
-    if (!chosen) {
+    /*if (!chosen) {
         testAction.actionCode = RETRAIN_STUDENTS;
         testAction.disciplineFrom = STUDENT_BQN;
         testAction.disciplineTo = STUDENT_MJ;
@@ -85,21 +97,76 @@ action decideAction (Game g) {
             nextAction = testAction;
             chosen = TRUE;
         }
-    }
+    }*/
 
     // Mr GO8
     if (!chosen) {
-        path paths[] = ALL_PATHS;
-        int i = 0;
-        while ((i < sizeof(paths) / sizeof(paths[0])) & !chosen) {
-            testAction.actionCode = BUILD_GO8;
-            memcpy(testAction.destination, paths[i],
-                   sizeof(paths[i]));
-            if (isLegalAction(g, testAction)) {
-                nextAction = testAction;
-                chosen = TRUE;
+        if (getCampuses(g, getWhoseTurn(g)) > 0) {
+            // Code to convert the students when there's not enough
+            if (getStudents(g, getWhoseTurn(g), STUDENT_MJ) < 2) {
+                mostStudents = STUDENT_BPS;
+                if (getStudents(g, getWhoseTurn(g), STUDENT_BQN) > getStudents(g, getWhoseTurn(g), mostStudents)) {
+                    mostStudents = STUDENT_BQN;
+                } else if (getStudents(g, getWhoseTurn(g), STUDENT_MTV) > getStudents(g, getWhoseTurn(g), mostStudents)) {
+                    mostStudents = STUDENT_MTV;
+                }
+                testAction.actionCode = RETRAIN_STUDENTS;
+                testAction.disciplineFrom = mostStudents;
+                testAction.disciplineTo = STUDENT_MJ;
+                if (isLegalAction(g, testAction)) {
+                    nextAction = testAction;
+                    chosen = TRUE;
+                }
+            } else if (getStudents(g, getWhoseTurn(g), STUDENT_MMONEY) < 3) {
+                mostStudents = STUDENT_BPS;
+                if (getStudents(g, getWhoseTurn(g), STUDENT_BQN) > getStudents(g, getWhoseTurn(g), mostStudents)) {
+                    mostStudents = STUDENT_BQN;
+                } else if (getStudents(g, getWhoseTurn(g), STUDENT_MTV) > getStudents(g, getWhoseTurn(g), mostStudents)) {
+                    mostStudents = STUDENT_MTV;
+                }
+                testAction.actionCode = RETRAIN_STUDENTS;
+                testAction.disciplineFrom = mostStudents;
+                testAction.disciplineTo = STUDENT_MMONEY;
+                if (isLegalAction(g, testAction)) {
+                    nextAction = testAction;
+                    chosen = TRUE;
+                }
+            } else {
+                path paths[] = ALL_PATHS;
+                int i = 0;
+                while ((i < sizeof(paths) / sizeof(paths[0])) & !chosen) {
+                    testAction.actionCode = BUILD_GO8;
+                    memcpy(testAction.destination, paths[i], sizeof(paths[i]));
+                    if (isLegalAction(g, testAction)) {
+                        nextAction = testAction;
+                        chosen = TRUE;
+                    }
+                    i++;
+                }
             }
-            i++;
+        }
+    }
+
+    // Mr retrain
+    mostStudents = STUDENT_BPS;
+    leastStudents = STUDENT_BPS;
+    int i = STUDENT_BPS;
+    while (i <= STUDENT_MMONEY) {
+        if (getStudents(g, getWhoseTurn(g), i) < getStudents(g, getWhoseTurn(g), leastStudents)) {
+            leastStudents = i;
+        } else if (getStudents(g, getWhoseTurn(g), i) > getStudents(g, getWhoseTurn(g), mostStudents)) {
+            mostStudents = i;
+        }
+        i++;
+    }
+
+    if (!chosen) {
+        testAction.actionCode = RETRAIN_STUDENTS;
+        testAction.disciplineFrom = mostStudents;
+        testAction.disciplineTo = leastStudents;
+        if (getStudents(g, getWhoseTurn(g), mostStudents) > 3 && isLegalAction(g, testAction)) {
+            nextAction = testAction;
+            chosen = TRUE;
         }
     }
 
@@ -107,8 +174,7 @@ action decideAction (Game g) {
     if (!chosen) {
         path paths[] = ALL_PATHS;
         int i = 0;
-        while ((i < sizeof(paths) / sizeof(paths[0])) && !chosen)
-        {
+        while ((i < sizeof(paths) / sizeof(paths[0])) && !chosen) {
             testAction.actionCode = BUILD_CAMPUS;
             memcpy(testAction.destination, paths[i],
                    sizeof(paths[i]));
@@ -120,12 +186,11 @@ action decideAction (Game g) {
         }
     }
     
-    // The roots of Mr ARC - very buggy at the moment
+    // The roots of Mr ARC
     if (!chosen) {
         path arcs[] = ALL_PATHS;
         int i = 0;
-        while ((i < sizeof(arcs) / sizeof(arcs[0])) && !chosen)
-        {
+        while ((i < sizeof(arcs) / sizeof(arcs[0])) && !chosen) {
             testAction.actionCode = OBTAIN_ARC;
             memcpy(testAction.destination, arcs[i],
                    sizeof(arcs[i]));
