@@ -11,15 +11,15 @@
 #include "mechanicalTurk.h"
 
 #define ALL_PATHS {"RL", "RLR", "RLL", "RLRL", "RLRR", "RLLR",\
- "RLRRL", "RLRLR", "RLRLL", "RLLRL", "RLRRLL", "RLRLRL",\
- "RLRLLR", "RLLRLR", "RLLRLRR", "RLRLRLL", "RLRLRLR", "RLRRLLR",\
- "RLLRLRRL", "RLRLRLLR", "RLRLRLRL", "RLRLRLRR","RLRLRLLRR", "RLLRLRRLR",\
- "R", "LR", "RRL", "RRLRLL", "LRLR", "LRLRLRR",\
- "LRLRLRR", "RRLRLLRL", "LRLRLRRLR", "LRLRRLRLRL", "RRLLRLRLR", "LRRLRLRLRL",\
- "RLRLRLRLR", "", "L", "LRL", "LRLRL", "LRLRLR",\
- "LRLRLRRL", "LRLRLRRLRL", "LRLRRLRLRLR", "LRRLRLRLRLR", "RLRLRLRLRL", "RRLLRLRLRL",\
+ "RLRRL", "RLRLR", "RLRLL", "RLLRL", "RLRRLL", "RLRLRL", "RLRLLR",\
+ "RLLRLR", "RLLRLRR", "RLRLRLL", "RLRLRLR", "RLRRLLR", "RLLRLRRL",\
+ "RLRLRLLR", "RLRLRLRL", "RLRLRLRR", "RLRLRLLRR", "RLLRLRRLR", "R",\
+ "LR", "RRL", "RRLRLL", "LRLR", "LRLRLRR", "LRLRLRR", "RRLRLLRL",\
+ "LRLRLRRLR", "LRLRRLRLRL", "RRLLRLRLR", "LRRLRLRLRL", "RLRLRLRLR", "",\
+ "L", "LRL", "LRLRL", "LRLRLR", "LRLRLRRL", "LRLRLRRLRL",\
+ "LRLRRLRLRLR", "LRRLRLRLRLR", "RLRLRLRLRL", "RRLLRLRLRL",\
  "RRLRLLRLRL", "RRLRLLRLR", "RRLRLLR", "RRLRL", "RRLR", "RR"}
- #define NUM_PATHS 54
+#define NUM_PATHS 54
 
 action decideAction (Game g) {
     action testAction;
@@ -48,8 +48,11 @@ action decideAction (Game g) {
         testAction.actionCode = RETRAIN_STUDENTS;
         testAction.disciplineFrom = mostStudents;
         testAction.disciplineTo = leastStudents;
-        if ((getStudents(g, getWhoseTurn(g), mostStudents) > getExchangeRate(g, getWhoseTurn(g), mostStudents, leastStudents)) &&
-            isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), leastStudents) == 0) {
+        if ((getStudents(g, getWhoseTurn(g), mostStudents) >
+             getExchangeRate(g,getWhoseTurn(g),
+                             mostStudents,leastStudents)) &&
+            isLegalAction(g, testAction) &&
+            getStudents(g, getWhoseTurn(g), leastStudents) == 0) {
             nextAction = testAction;
             chosen = TRUE;
         }
@@ -80,7 +83,8 @@ action decideAction (Game g) {
     }
 
     // Mr ARC
-    if (!chosen && getARCs(g, getWhoseTurn(g)) < getCampuses(g, getWhoseTurn(g)) + 10) {
+    if (!chosen && getARCs(g, getWhoseTurn(g)) <
+        getCampuses(g, getWhoseTurn(g)) + 10) {
         path arcs[] = ALL_PATHS;
         int i = 0;
         while ((i < NUM_PATHS) && !chosen) {
