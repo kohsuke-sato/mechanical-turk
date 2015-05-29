@@ -29,6 +29,7 @@
  "RRLRLL", "LRLRLRR", "RRLRLLR", "LRLRLRR", "RRLRLLRL", "LRLRLRRL",\
  "RRLRLLRLR", "LRLRLRRLR", "LRLRLRRLRR", "RRLRLLRLRL", "LRLRRLRLRL", "RRLLRLRLR",\
  "LRLRRLRLRLR", "RRLLRLRLRL", "LRRLRLRLRL", "RLRLRLRLR", "RLRLRLRLRL", "LRRLRLRLRLR"}
+ #define NUM_PATHS 54
 
 action decideAction (Game g) {
     action testAction;
@@ -134,7 +135,7 @@ action decideAction (Game g) {
             } else {
                 path paths[] = ALL_PATHS;
                 int i = 0;
-                while ((i < sizeof(paths) / sizeof(paths[0])) & !chosen) {
+                while ((i < NUM_PATHS) & !chosen) {
                     testAction.actionCode = BUILD_GO8;
                     memcpy(testAction.destination, paths[i], sizeof(paths[i]));
                     if (isLegalAction(g, testAction)) {
@@ -151,10 +152,17 @@ action decideAction (Game g) {
     mostStudents = STUDENT_BPS;
     leastStudents = STUDENT_BPS;
     int i = STUDENT_BPS;
+    int a;
+    int nMost;
+    int nLeast;
     while (i <= STUDENT_MMONEY) {
-        if (getStudents(g, getWhoseTurn(g), i) < getStudents(g, getWhoseTurn(g), leastStudents)) {
+        a = getStudents(g, getWhoseTurn(g), i);
+        nLeast = getStudents(g, getWhoseTurn(g), leastStudents);
+        nMost = getStudents(g, getWhoseTurn(g), mostStudents);
+        if (a < nLeast) {
             leastStudents = i;
-        } else if (getStudents(g, getWhoseTurn(g), i) > getStudents(g, getWhoseTurn(g), mostStudents)) {
+        }
+        if (a > nMost) {
             mostStudents = i;
         }
         i++;
@@ -164,7 +172,7 @@ action decideAction (Game g) {
         testAction.actionCode = RETRAIN_STUDENTS;
         testAction.disciplineFrom = mostStudents;
         testAction.disciplineTo = leastStudents;
-        if (getStudents(g, getWhoseTurn(g), mostStudents) > 3 && isLegalAction(g, testAction)) {
+        if ((getStudents(g, getWhoseTurn(g), mostStudents) > 3) && isLegalAction(g, testAction)) {
             nextAction = testAction;
             chosen = TRUE;
         }
@@ -174,10 +182,9 @@ action decideAction (Game g) {
     if (!chosen) {
         path paths[] = ALL_PATHS;
         int i = 0;
-        while ((i < sizeof(paths) / sizeof(paths[0])) && !chosen) {
+        while ((i < NUM_PATHS) && !chosen) {
             testAction.actionCode = BUILD_CAMPUS;
-            memcpy(testAction.destination, paths[i],
-                   sizeof(paths[i]));
+            memcpy(testAction.destination, paths[i], sizeof(paths[i]));
             if (isLegalAction(g, testAction)) {
                 nextAction = testAction;
                 chosen = TRUE;
@@ -190,10 +197,9 @@ action decideAction (Game g) {
     if (!chosen) {
         path arcs[] = ALL_PATHS;
         int i = 0;
-        while ((i < sizeof(arcs) / sizeof(arcs[0])) && !chosen) {
+        while ((i < NUM_PATHS) && !chosen) {
             testAction.actionCode = OBTAIN_ARC;
-            memcpy(testAction.destination, arcs[i],
-                   sizeof(arcs[i]));
+            memcpy(testAction.destination, arcs[i], sizeof(arcs[i]));
             if (isLegalAction(g, testAction)) {
                 nextAction = testAction;
                 chosen = TRUE;
