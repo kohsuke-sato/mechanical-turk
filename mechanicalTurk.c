@@ -39,136 +39,26 @@ action decideAction (Game g) {
     int mostStudents;
     int leastStudents;
 
-    // Try to change disciplines
-    /*if (!chosen) {
-        testAction.actionCode = RETRAIN_STUDENTS;
-        testAction.disciplineFrom = STUDENT_BQN;
-        testAction.disciplineTo = STUDENT_MJ;
-        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MJ) < STUDENT_BQN * 2) {
-            nextAction = testAction;
-            chosen = TRUE;
-        }
-    }
-
-    if (!chosen) {
-        testAction.actionCode = RETRAIN_STUDENTS;
-        testAction.disciplineFrom = STUDENT_BPS;
-        testAction.disciplineTo = STUDENT_MJ;
-        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MJ) < STUDENT_BPS * 2) {
-            nextAction = testAction;
-            chosen = TRUE;
-        }
-    }
-
-    if (!chosen) {
-        testAction.actionCode = RETRAIN_STUDENTS;
-        testAction.disciplineFrom = STUDENT_BQN;
-        testAction.disciplineTo = STUDENT_MTV;
-        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MTV) < STUDENT_BQN * 2) {
-            nextAction = testAction;
-            chosen = TRUE;
-        }
-    }
-
-    if (!chosen) {
-        testAction.actionCode = RETRAIN_STUDENTS;
-        testAction.disciplineFrom = STUDENT_BPS;
-        testAction.disciplineTo = STUDENT_MTV;
-        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MTV) < STUDENT_BPS * 2) {
-            nextAction = testAction;
-            chosen = TRUE;
-        }
-    }
-
-    if (!chosen) {
-        testAction.actionCode = RETRAIN_STUDENTS;
-        testAction.disciplineFrom = STUDENT_BQN;
-        testAction.disciplineTo = STUDENT_MMONEY;
-        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MMONEY) < STUDENT_BQN * 2) {
-            nextAction = testAction;
-            chosen = TRUE;
-        }
-    }
-
-    if (!chosen) {
-        testAction.actionCode = RETRAIN_STUDENTS;
-        testAction.disciplineFrom = STUDENT_BPS;
-        testAction.disciplineTo = STUDENT_MMONEY;
-        if (isLegalAction(g, testAction) && getStudents(g, getWhoseTurn(g), STUDENT_MMONEY) < STUDENT_BPS * 2) {
-            nextAction = testAction;
-            chosen = TRUE;
-        }
-    }*/
-
-    // Mr GO8
-    if (!chosen) {
-        if (getCampuses(g, getWhoseTurn(g)) > 0) {
-            // Code to convert the students when there's not enough
-            if (getStudents(g, getWhoseTurn(g), STUDENT_MJ) < 2) {
-                mostStudents = STUDENT_BPS;
-                if (getStudents(g, getWhoseTurn(g), STUDENT_BQN) > getStudents(g, getWhoseTurn(g), mostStudents)) {
-                    mostStudents = STUDENT_BQN;
-                } else if (getStudents(g, getWhoseTurn(g), STUDENT_MTV) > getStudents(g, getWhoseTurn(g), mostStudents)) {
-                    mostStudents = STUDENT_MTV;
-                }
-                testAction.actionCode = RETRAIN_STUDENTS;
-                testAction.disciplineFrom = mostStudents;
-                testAction.disciplineTo = STUDENT_MJ;
-                if (isLegalAction(g, testAction)) {
-                    nextAction = testAction;
-                    chosen = TRUE;
-                }
-            } else if (getStudents(g, getWhoseTurn(g), STUDENT_MMONEY) < 3) {
-                mostStudents = STUDENT_BPS;
-                if (getStudents(g, getWhoseTurn(g), STUDENT_BQN) > getStudents(g, getWhoseTurn(g), mostStudents)) {
-                    mostStudents = STUDENT_BQN;
-                } else if (getStudents(g, getWhoseTurn(g), STUDENT_MTV) > getStudents(g, getWhoseTurn(g), mostStudents)) {
-                    mostStudents = STUDENT_MTV;
-                }
-                testAction.actionCode = RETRAIN_STUDENTS;
-                testAction.disciplineFrom = mostStudents;
-                testAction.disciplineTo = STUDENT_MMONEY;
-                if (isLegalAction(g, testAction)) {
-                    nextAction = testAction;
-                    chosen = TRUE;
-                }
-            } else {
-                path paths[] = ALL_PATHS;
-                int i = 0;
-                while ((i < NUM_PATHS) & !chosen) {
-                    testAction.actionCode = BUILD_GO8;
-                    memcpy(testAction.destination, paths[i], sizeof(paths[i]));
-                    if (isLegalAction(g, testAction)) {
-                        nextAction = testAction;
-                        chosen = TRUE;
-                    }
-                    i++;
-                }
-            }
-        }
-    }
-
     // Mr retrain
-    mostStudents = STUDENT_BPS;
-    leastStudents = STUDENT_BPS;
-    int i = STUDENT_BPS;
-    int a;
-    int nMost;
-    int nLeast;
-    while (i <= STUDENT_MMONEY) {
-        a = getStudents(g, getWhoseTurn(g), i);
-        nLeast = getStudents(g, getWhoseTurn(g), leastStudents);
-        nMost = getStudents(g, getWhoseTurn(g), mostStudents);
-        if (a < nLeast) {
-            leastStudents = i;
-        }
-        if (a > nMost) {
-            mostStudents = i;
-        }
-        i++;
-    }
-
     if (!chosen) {
+        mostStudents = STUDENT_BPS;
+        leastStudents = STUDENT_BPS;
+        int i = STUDENT_BPS;
+        while (i <= STUDENT_MMONEY) {
+            if (getStudents(g, getWhoseTurn(g), i) < getStudents(g, getWhoseTurn(g), leastStudents)) {
+                leastStudents = i;
+            }
+            if (getStudents(g, getWhoseTurn(g), i) > getStudents(g, getWhoseTurn(g), mostStudents)) {
+                mostStudents = i;
+            }
+            i++;
+        }
+        
+        if (getStudents(g, getWhoseTurn(g), STUDENT_BQN) == 0) {
+            leastStudents = STUDENT_BQN;
+        } else if (getStudents(g, getWhoseTurn(g), STUDENT_BPS) == 0) {
+            leastStudents = STUDENT_BPS;
+        }
         testAction.actionCode = RETRAIN_STUDENTS;
         testAction.disciplineFrom = mostStudents;
         testAction.disciplineTo = leastStudents;
@@ -192,8 +82,8 @@ action decideAction (Game g) {
             i++;
         }
     }
-    
-    // The roots of Mr ARC
+
+    // Mr ARC
     if (!chosen) {
         path arcs[] = ALL_PATHS;
         int i = 0;
@@ -208,8 +98,24 @@ action decideAction (Game g) {
         }
     }
 
-    // Mr Pass
+    // Mr GO8
+    if (!chosen) {
+        if (getCampuses(g, getWhoseTurn(g)) > 0) {
+            path paths[] = ALL_PATHS;
+            int i = 0;
+            while ((i < NUM_PATHS) & !chosen) {
+                testAction.actionCode = BUILD_GO8;
+                memcpy(testAction.destination, paths[i], sizeof(paths[i]));
+                if (isLegalAction(g, testAction)) {
+                    nextAction = testAction;
+                    chosen = TRUE;
+                }
+                i++;
+            }
+        }
+    }
 
+    // Mr Spinoff
     if (!chosen) {
         testAction.actionCode = START_SPINOFF;
         if (isLegalAction(g, testAction)) {
@@ -218,6 +124,7 @@ action decideAction (Game g) {
         } 
     }
 
+    // Mr Pass
     if (!chosen) {
         nextAction.actionCode = PASS;
     }
